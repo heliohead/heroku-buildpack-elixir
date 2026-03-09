@@ -8,11 +8,15 @@ erlang_builds_url() {
     "heroku-22")
       erlang_builds_url="https://builds.hex.pm/builds/otp/ubuntu-22.04"
       ;;
+    "heroku-24")
+      # Use builds.hex.pm directly to avoid redirects (curl -L isn't used everywhere)
+      erlang_builds_url="https://builds.hex.pm/builds/otp/ubuntu-24.04"
+      ;;
     *)
       erlang_builds_url="https://s3.amazonaws.com/heroku-buildpack-elixir/erlang/cedar-14"
       ;;
   esac
-  echo $erlang_builds_url
+  echo "$erlang_builds_url"
 }
 
 fetch_elixir_versions() {
@@ -28,6 +32,10 @@ fetch_erlang_versions() {
       ;;
     "heroku-22")
       url="https://builds.hex.pm/builds/otp/ubuntu-22.04/builds.txt"
+      curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}'
+      ;;
+    "heroku-24")
+      url="https://builds.hex.pm/builds/otp/ubuntu-24.04/builds.txt"
       curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}'
       ;;
     *)
